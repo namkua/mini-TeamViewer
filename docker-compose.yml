@@ -1,0 +1,35 @@
+services:
+  server:
+    build:
+      context: ./source/server
+      dockerfile: Dockerfile
+    container_name: remote_desktop_relay_server
+    ports:
+      - "8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DEBUG=true
+      - DATABASE_URL=sqlite+aiosqlite:///./remote_desktop.db
+    volumes:
+      - ./source/server:/app
+    restart: unless-stopped
+    networks:
+      - remote_net
+
+  web:
+    build:
+      context: ./source/client/web
+      dockerfile: Dockerfile
+    container_name: remote_desktop_web_viewer
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+    networks:
+      - remote_net
+
+networks:
+  remote_net:
+    driver: bridge
