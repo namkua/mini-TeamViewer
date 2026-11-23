@@ -35,7 +35,10 @@ async def websocket_host_endpoint(
         while True:
             # Nhận gói tin từ Agent (có thể là bytes hoặc text)
             message = await websocket.receive()
-            
+
+            if message.get("type") == "websocket.disconnect":
+                logger.info(f"Host {device_id} disconnected (code={message.get('code')}).")
+                break
             if "bytes" in message and message["bytes"]:
                 # Gói tin nhị phân JPEG frame
                 await manager.forward_binary_to_viewers(device_id, message["bytes"])

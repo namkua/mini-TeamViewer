@@ -101,7 +101,7 @@ class ConnectionManager:
 
         async def _send_one(viewer):
             try:
-                await viewer.send_bytes(frame_bytes)
+                await asyncio.wait_for(viewer.send_bytes(frame_bytes), timeout=2.0)
                 return None
             except Exception as e:
                 logger.warning(f"Failed to forward binary to viewer of {device_id}: {e}")
